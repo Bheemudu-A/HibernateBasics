@@ -7,12 +7,15 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.internal.build.AllowSysOut;
+import org.hibernate.query.Query;
 
 /**
  * Hello world!
  *
  */
 public class App {
+	
 	public static void main(String[] args) {
 
 		/*
@@ -74,13 +77,10 @@ public class App {
 
 		// -------------------------above code is about CRUD operations for now commenting it, do uncomment when you need it-----------------------
 
-		
-		SessionFactory sfy = new Configuration().
+	/*	SessionFactory sfy = new Configuration().
 				addAnnotatedClass(src.hibernatedemo.Programmer.class).
 				addAnnotatedClass(src.hibernatedemo.Laptop.class).
 				configure().buildSessionFactory();
-		
-		Session sn = sfy.openSession();
 		
 		Laptop lpt = new Laptop();
 		
@@ -100,15 +100,14 @@ public class App {
 		dev.setLaptop(Arrays.asList(lpt, lpt2));
 		dev.setTechnology("Java");
 		
-		Programmer fron = new Programmer();
-		
-		fron.setEmpId(10043312);
-		fron.setLaptop(Arrays.asList(lpt, lpt2));
-		fron.setTechnology("JavaScript");
 		
 		
-		lpt.setProgrammer(List.of(dev, fron));
-		lpt2.setProgrammer(List.of(dev, fron));
+	//	lpt.setProgrammer(dev);
+	//	lpt2.setProgrammer(dev);
+		
+		
+		
+		Session sn = sfy.openSession();
 		
 		
 		Transaction tn = sn.beginTransaction();
@@ -116,13 +115,81 @@ public class App {
 		sn.persist(dev);
 		sn.persist(lpt);
 		sn.persist(lpt2);
-		sn.persist(fron);
 		tn.commit();
 		
 		sn.close();
+		
+		Session newSs = sfy.openSession();
+		
+		Programmer programer = newSs.get(Programmer.class, 10043311);
+		
+		newSs.close();
+		
 		sfy.close();
 		
-		System.out.println(dev);
+		System.out.println(dev); */
 		
+		//2. till now(above) relation ships & Eager Fetch was done, below code is to get idea of HQL
+		
+		SessionFactory sftr = new Configuration().
+				addAnnotatedClass(src.hibernatedemo.Company.class).
+				configure().buildSessionFactory();
+		
+		Session sn = sftr.openSession();
+		
+	/*	Company cmny = new Company();
+		
+		cmny.setAge(26);
+		cmny.setDesignation("Java Developer");
+		cmny.setEmpName("Srinivas");
+		cmny.setSalary(60000);*/
+		
+
+		String age = "25";
+		
+		
+		Query<Company> query =  sn.createQuery("From Company where age =?1");
+		
+		query.setParameter(1, age);
+		List<Company> result = query.getResultList();
+		
+		System.out.println("result: "+result);
+		
+		  
+		//get vs load
+		
+		//get is eager loading
+	//	Company com =  sn.get(Company.class, 26);
+	//	System.out.println(com);
+		
+		//lazy loading, until you print the result, background query wont trigger
+		Company com = sn.load(Company.class, 26);	
+	//	System.out.println(com);
+		
+		//note:load method is deprecated so instead of load we can use byId method for lazy loading	
+		Company com1 = sn.byId(Company.class).getReference(28);
+	//	System.out.println(com1);
+		
+		//--------L2 Cache-----------------
+		/*
+		 * to achieve 2nd level cache add external cache ex: EhCache dependency & add annotation @Cacheable on entity class, to make it work
+		 * make purpose of 2nd level cache is even though if you fire queries from different sessions, in background in will load query only once 
+		 */
+		Company l1 =  sn.get(Company.class, 26);
+		System.out.println("l1: "+l1);
+		sn.close();
+		
+		Session sess2 = sftr.openSession();
+		
+		Company l2 = sess2.get(Company.class, 26);
+		System.out.println("l2: "+l2);
+		
+	//	sn.persist(cmny);
+		
+	//	Transaction tns = sn.beginTransaction();
+		
+ //	tns.commit();
+		
+	//	System.out.println(cmny);
 	}
 }
