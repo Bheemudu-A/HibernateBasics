@@ -16,12 +16,9 @@ public class Laptop {
 	private int ram;
 	@Id
 	private int id;
-	/*
-	 * mapped by is used to avoid it's own mapping(without this in DB 2 tables will be created laptop_programmer & programmer_laptop)
-	 * now by using mappedBy only one table is created programmer_laptop by avoiding it's own creation
-	 */
-	@ManyToMany(mappedBy = "laptops") 
-	private List<Programmer> programmer;
+	
+//	@ManyToOne
+//	private Programmer programmer;
 	
 	public String getBrand() {
 		return brand;
@@ -47,13 +44,13 @@ public class Laptop {
 		this.id = id;
 	}
 	
-	public List<Programmer> getProgrammer() {
+	/*public Programmer getProgrammer() {
 		return programmer;
 	}
 
-	public void setProgrammer(List<Programmer> programmer) {
+	public void setProgrammer(Programmer programmer) {
 		this.programmer = programmer;
-	}
+	}*/
 
 	@Override
 	public String toString() {

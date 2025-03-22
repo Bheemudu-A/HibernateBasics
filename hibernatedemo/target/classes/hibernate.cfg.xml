@@ -7,10 +7,10 @@
         <property name="hibernate.connection.password">Sathya@123</property>
 
 
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         
         <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.format_sql">true</property>
+       <!-- <property name="hibernate.format_sql">true</property>-->
         
     </session-factory>
 </hibernate-configuration>
